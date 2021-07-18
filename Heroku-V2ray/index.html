@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Guangxin Wang"><meta name="copyright" content="Guangxin Wang"><meta name="generator" content="Hexo 5.3.0"><meta name="theme" content="hexo-theme-yun"><title>Heroku搭建V2ray教程 | wgx's blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.24/dist/yun/yun-markdown.min.css"><script src="https://cdn.jsdelivr.net/gh/wgx-dh/img/iconfont0301.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>document.addEventListener("DOMContentLoaded", () => {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+});
+</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script>document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ]
+  });
+});</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/wgx-dh/img/shuangdong.svg"><link rel="mask-icon" href="https://cdn.jsdelivr.net/gh/wgx-dh/img/shuangdong.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"wang-guangxin.github.io","root":"/","title":"汪广鑫的小站","version":"1.5.0","mode":"auto","copycode":true,"page":{"isPost":true},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><link rel="alternate" href="/atom.xml" title="wgx's blog" type="application/atom+xml"><meta name="description" content="必要条件    Heruku 账号 科学上网环境 Cloudflare 账号    免费且高速！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Heroku搭建V2ray教程">
+<meta property="og:url" content="https://wang-guangxin.github.io/Heroku-V2ray/index.html">
+<meta property="og:site_name" content="wgx&#39;s blog">
+<meta property="og:description" content="必要条件    Heruku 账号 科学上网环境 Cloudflare 账号    免费且高速！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704133351.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704134010.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704140120.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704140339.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704140610.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704140829.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141229.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141310.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141344.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141830.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141927.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704142810.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704143014.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704144034.png">
+<meta property="article:published_time" content="2021-07-04T13:22:33.000Z">
+<meta property="article:modified_time" content="2021-07-04T13:22:33.000Z">
+<meta property="article:author" content="Guangxin Wang">
+<meta property="article:tag" content="教程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704133351.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Guangxin Wang"><img width="96" loading="lazy" src="https://w-gx.gitee.io/avatar_rmbg.webp" alt="Guangxin Wang"><span class="site-author-status" title="美好的事正在发生">💖</span></a><div class="site-author-name"><a href="/about/">Guangxin Wang</a></div><a class="site-name" href="/about/site.html">wgx's blog</a><sub class="site-subtitle">NO CODE NO LIFE</sub><div class="site-desciption"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">25</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">0</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">15</span></a></div><a class="site-state-item hty-icon-button" href="/catalog/" title="原站文章目录"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-rss-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="tencent://message/?uin=2401881997&amp;Site=&amp;Menu=yes" title="QQ" target="_blank" style="color:#12B7F5"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-qq-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wang-Guangxin" title="GitHub" target="_blank" style="color:var(--hty-text-color)"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://weibo.com/3166393074" title="微博" target="_blank" style="color:#E6162D"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-weibo-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.douban.com/people/174704756/" title="豆瓣" target="_blank" style="color:#007722"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-douban-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=106168851" title="网易云音乐" target="_blank" style="color:#C20C0C"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-netease-cloud-music-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/zhi-zhang-de-ma-hua-teng" title="知乎" target="_blank" style="color:#0084FF"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhihu-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/50545164" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bilibili-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.instagram.com/wgx7777/" title="Instagram" target="_blank" style="color:#B20C0C"><svg class="icon" aria-hidden="true"><use xlink:href="#iconinstagram1"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://guistar.tk/" title="我的云盘" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#iconyunpan"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://ifancyu.cf/" title="My Webstack" target="_blank" style="color:#1da1f2"><svg class="icon" aria-hidden="true"><use xlink:href="#iconwangzhanditu"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:w-gx@qq.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%85%E8%A6%81%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text"> 必要条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E9%83%A8%E7%BD%B2"><span class="toc-number">2.</span> <span class="toc-text"> 开始部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%BC%80%E9%A1%B9%E7%9B%AE"><span class="toc-number">2.1.</span> <span class="toc-text"> 打开项目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90uuid"><span class="toc-number">2.2.</span> <span class="toc-text"> 生成UUID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2"><span class="toc-number">2.3.</span> <span class="toc-text"> 部署</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cloudflare-%E4%BB%A3%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text"> Cloudflare 代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%8A%82%E7%82%B9%E6%B7%BB%E5%8A%A0"><span class="toc-number">4.</span> <span class="toc-text"> 客户端节点添加</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://wang-guangxin.github.io/Heroku-V2ray/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Guangxin Wang"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="wgx's blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Heroku搭建V2ray教程</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-07-04 13:22:33" itemprop="dateCreated datePublished" datetime="2021-07-04T13:22:33+00:00">2021-07-04</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">557</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">2m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye-line"></use></svg> <span id="busuanzi_value_page_pv"></span></span></span><div class="post-classify"><span class="post-tag"><a class="tag" href="/tags/%E6%95%99%E7%A8%8B/" style="--text-color:#0E83CD"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">教程</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h2 id="必要条件"><a class="markdownIt-Anchor" href="#必要条件"></a> 必要条件</h2>
+<div class="warning">
+<blockquote>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.heroku.com/">Heruku</a> 账号</li>
+<li>科学上网环境</li>
+<li><a target="_blank" rel="noopener" href="https://www.cloudflare.com/zh-cn/">Cloudflare</a> 账号</li>
+</ol>
+</blockquote>
+</div>
+<p><strong>免费且高速！</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704133351.png" alt="image-20210704133351782" / loading="lazy"></p>
+<a id="more"></a>
+<h2 id="开始部署"><a class="markdownIt-Anchor" href="#开始部署"></a> 开始部署</h2>
+<blockquote>
+<ul>
+<li>科学上网环境也许不是必要条件，主要是因为国内网络打开Heroku有点慢，所以有科学上网环境会使整个过程更加顺利一些。</li>
+<li>注册账号的过程不予截图展示，先去注册好账号再来操作。</li>
+</ul>
+</blockquote>
+<h3 id="打开项目"><a class="markdownIt-Anchor" href="#打开项目"></a> 打开项目</h3>
+<p>首先，打开 <a target="_blank" rel="noopener" href="https://github.com/w-gx/Heroku-xray-trojangows-ssws">Github项目</a> 地址，点击<code>部署到Heroku</code>紫色按钮。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704134010.png" alt="image-20210704134010708" / loading="lazy"></p>
+<p>对于刚注册的Heroku账户，会弹出服务协议页面，点击接受就好了。<strong>正确的页面如下图所示，如果点击接受之后没有出现下面这个界面，可以重新打开GitHub项目点击部署按钮进行尝试。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704140120.png" alt="image-20210704140120049" / loading="lazy"></p>
+<p><strong>此处的 APP name 在 Cloudflare 代理中还会用到，小白应该记住这个名字。当然了，这些信息其实都是可以查看的，熟练使用的话不需要刻意记。</strong></p>
+<h3 id="生成uuid"><a class="markdownIt-Anchor" href="#生成uuid"></a> 生成UUID</h3>
+<ol>
+<li>
+<p>打开 V2rayN 客户端，点击<code>服务器</code>-&gt;<code>添加VMess服务器</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704140339.png" alt="image-20210704140339498" / loading="lazy"></p>
+</li>
+<li>
+<p>点击<code>生成</code>按钮，记录用户ID并填入部署界面AUUID中。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704140610.png" alt="image-20210704140610760" / loading="lazy"></p>
+</li>
+</ol>
+<h3 id="部署"><a class="markdownIt-Anchor" href="#部署"></a> 部署</h3>
+<p>点击<code>Deploy app</code>按钮，如下显示即为部署成功。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704140829.png" alt="image-20210704140829818" / loading="lazy"></p>
+<p>点击<code>Manage APP</code>，进入管理页面，点击<code>Setting</code>,可以查看APP的详细信息，在域名栏中可以看到自己的项目地址，点击这个地址跳转到部署的伪装网站中，伪装网站默认为 Caddy works！</p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141229.png" alt="image-20210704141229664" / loading="lazy"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141310.png" alt="image-20210704141310012" / loading="lazy"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141344.png" alt="image-20210704141344808" / loading="lazy"></p>
+<h2 id="cloudflare-代理"><a class="markdownIt-Anchor" href="#cloudflare-代理"></a> Cloudflare 代理</h2>
+<ol>
+<li>
+<p>登录后点击 <code>Workers</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141830.png" alt="image-20210704141830314" / loading="lazy"></p>
+</li>
+<li>
+<p>点击<code>创建Worker</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704141927.png" alt="image-20210704141927438" / loading="lazy"></p>
+</li>
+<li>
+<p>在弹出页面中的脚本填入下面的代码，并按图示步骤操作。</p>
+<pre class="line-numbers language-脚本" data-language="脚本"><code class="language-脚本">const SingleDay &#x3D; &#39;应用程序名1.herokuapp.com&#39;
+const DoubleDay &#x3D; &#39;应用程序名2.herokuapp.com&#39;
+addEventListener(
+    &quot;fetch&quot;,event &#x3D;&gt; &#123;
+    
+        let nd &#x3D; new Date();
+        if (nd.getDate()%2) &#123;
+            host &#x3D; SingleDay
+        &#125; else &#123;
+            host &#x3D; DoubleDay
+        &#125;
+        
+        let url&#x3D;new URL(event.request.url);
+        url.hostname&#x3D;host;
+        let request&#x3D;new Request(url,event.request);
+        event. respondWith(
+            fetch(request)
+        )
+    &#125;
+)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704142810.png" alt="image-20210704142810175" / loading="lazy"></p>
+</li>
+<li>
+<p>获取新的代理地址。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704143014.png" alt="image-20210704143013911" / loading="lazy"></p>
+</li>
+</ol>
+<h2 id="客户端节点添加"><a class="markdownIt-Anchor" href="#客户端节点添加"></a> 客户端节点添加</h2>
+<p>以v2rayN客户端为例，添加VMess服务器，信息填写如下图所示。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/wgx-dh/FAMED-Net/v2ray/20210704144034.png" alt="image-20210704144034141" / loading="lazy"></p>
+<div class="danger">
+<blockquote>
+<p>速度挺快的，Youtube 1080p 轻松。</p>
+<p>缺点是不能上 Google 学术。</p>
+<p>流媒体我没测试，大概率应该也上不去。</p>
+</blockquote>
+</div></div><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-hand-coin-line"></use></svg></span><div id="reward-comment">I'm so cute. Please give me money.</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/wgx-dh/logo/%E8%B5%9E%E5%8A%A9%E6%94%AF%E4%BB%98%E5%AE%9D.jpg"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/wgx-dh/logo/%E8%B5%9E%E5%8A%A9%E6%94%AF%E4%BB%98%E5%AE%9D.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-alipay-line"></use></svg></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/wgx-dh/logo/赞助QQ.png"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/wgx-dh/logo/赞助QQ.png" alt="QQ 支付" title="QQ 支付"></a><div><span style="color:#12B7F5"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-qq-line"></use></svg></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/wgx-dh/logo/%E8%B5%9E%E5%8A%A9%E5%BE%AE%E4%BF%A1.png"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/wgx-dh/logo/%E8%B5%9E%E5%8A%A9%E5%BE%AE%E4%BF%A1.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-wechat-pay-line"></use></svg></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Guangxin Wang</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://wang-guangxin.github.io/Heroku-V2ray/" title="Heroku搭建V2ray教程">https://wang-guangxin.github.io/Heroku-V2ray/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/fuckxybx/" rel="prev" title="Fuck 信仰不息"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">Fuck 信仰不息</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/tian/" rel="next" title="甜"><span class="post-nav-text">甜</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>点击按钮跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br><a class="hty-button hty-button--raised" id="github-issues" target="_blank" rel="noopener" href="https://github.com/Wang-Guangxin/Blog-Comments/issues?q=is:issue+Heroku搭建V2ray教程">GitHub Issues</a></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2020 – 2021 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#iconshuangdong"></use></svg></span><span class="author"> Guangxin Wang</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v5.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.5.0</span></div><div id="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_site_uv" title="总访客量"><span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-user-line"></use></svg></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye-line"></use></svg></span><span id="busuanzi_value_site_pv"></span></span></div></footer><a class="hty-icon-button" id="goUp" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div id="local-search-result"></div></div></div></body></html>
